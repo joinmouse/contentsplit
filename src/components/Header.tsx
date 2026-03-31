@@ -16,7 +16,7 @@ export default function Header() {
       <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", color: "var(--text-1)" }}>
           <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em" }}>
-            Content<span style={{ color: "var(--accent)" }}>Split</span>
+            Re<span style={{ color: "var(--accent)" }}>cast</span>
           </span>
         </Link>
 
@@ -24,6 +24,7 @@ export default function Header() {
           <Link href="#features" style={{ fontSize: 14, color: "var(--text-3)", textDecoration: "none" }}>Features</Link>
           <Link href="#how-it-works" style={{ fontSize: 14, color: "var(--text-3)", textDecoration: "none" }}>How It Works</Link>
           <Link href="#try" style={{ fontSize: 14, color: "var(--text-3)", textDecoration: "none" }}>Try It</Link>
+          <Link href="/pricing" style={{ fontSize: 14, color: "var(--text-3)", textDecoration: "none" }}>Pricing</Link>
 
           <button onClick={toggle} style={{
             background: "none", border: "1px solid var(--border)", borderRadius: 8,

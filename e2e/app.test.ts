@@ -9,9 +9,9 @@ describe("Homepage", () => {
     expect(res.headers.get("content-type")).toContain("text/html");
   });
 
-  it("contains ContentSplit branding", async () => {
+  it("contains Recast branding", async () => {
     const html = await (await fetch(`${BASE}/`)).text();
-    expect(html).toContain("ContentSplit");
+    expect(html).toContain("Recast");
   });
 });
 

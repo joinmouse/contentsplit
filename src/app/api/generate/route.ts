@@ -4,13 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 async function extractFromUrl(url: string): Promise<string> {
   try {
     const res = await fetch(url, {
-      headers: { "User-Agent": "ContentSplit/1.0" },
+      headers: { "User-Agent": "Recast/1.0" },
       signal: AbortSignal.timeout(10000),
     });
     if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
     const html = await res.text();
 
-    // Strip HTML tags and extract text content
     let text = html
       .replace(/<script[\s\S]*?<\/script>/gi, "")
       .replace(/<style[\s\S]*?<\/style>/gi, "")
@@ -26,7 +25,6 @@ async function extractFromUrl(url: string): Promise<string> {
       .replace(/\s+/g, " ")
       .trim();
 
-    // Take first 3000 chars as content
     return text.slice(0, 3000);
   } catch (e) {
     throw new Error(`Could not extract content from URL: ${e instanceof Error ? e.message : String(e)}`);
@@ -84,12 +82,32 @@ function generateVideoScript(content: string): string {
   });
   script += `\n[CTA — 0:45-0:60]\n`;
   script += `"Follow for more insights like this. Save this video for later."\n`;
-  script += `\n---\n`;
-  script += `Total: ~60 seconds\n`;
-  script += `Style: Talking head / text overlay\n`;
-  script += `Music: Upbeat, minimal`;
+  script += `\n---\nTotal: ~60 seconds\nStyle: Talking head / text overlay\nMusic: Upbeat, minimal`;
 
   return script;
+}
+
+function generateNewsletter(content: string): string {
+  const sentences = content.split(/(?<=[.!?])\s+/).filter((s) => s.length > 15);
+  const title = sentences[0]?.slice(0, 100) || content.slice(0, 100);
+  const keyPoints = sentences.slice(1, 6).map((s) => s.slice(0, 200));
+
+  let nl = `📬 Subject Line: ${title}\n\n`;
+  nl += `---\n\n`;
+  nl += `Hey there,\n\n`;
+  nl += `Here's a quick digest of something worth your time:\n\n`;
+  nl += `**TL;DR**\n${sentences[0]?.slice(0, 200) || content.slice(0, 200)}\n\n`;
+  nl += `**Key Takeaways:**\n\n`;
+  keyPoints.forEach((p, i) => {
+    nl += `${i + 1}. ${p}\n`;
+  });
+  nl += `\n**Why It Matters:**\n`;
+  nl += `${sentences[sentences.length - 2]?.slice(0, 250) || "This is shaping the future of how we work."}\n\n`;
+  nl += `---\n\n`;
+  nl += `That's it for today. Hit reply if you have thoughts.\n\n`;
+  nl += `Until next time,\n[Your Name]`;
+
+  return nl;
 }
 
 export async function POST(req: NextRequest) {
@@ -105,7 +123,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing input or platforms" }, { status: 400 });
     }
 
-    // Get content
     let content: string;
     if (mode === "url") {
       content = await extractFromUrl(input);
@@ -117,22 +134,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Content too short. Please provide more text." }, { status: 400 });
     }
 
-    // Generate for each platform
+    const generators: Record<string, (c: string) => string> = {
+      twitter: generateTwitterThread,
+      linkedin: generateLinkedInPost,
+      script: generateVideoScript,
+      newsletter: generateNewsletter,
+    };
+
     const results = platforms.map((platform) => {
-      let generated: string;
-      switch (platform) {
-        case "twitter":
-          generated = generateTwitterThread(content);
-          break;
-        case "linkedin":
-          generated = generateLinkedInPost(content);
-          break;
-        case "script":
-          generated = generateVideoScript(content);
-          break;
-        default:
-          generated = `Content for ${platform}: ${content.slice(0, 500)}`;
-      }
+      const gen = generators[platform];
+      const generated = gen ? gen(content) : `Content for ${platform}: ${content.slice(0, 500)}`;
       return { platform, content: generated };
     });
 

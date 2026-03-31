@@ -3,8 +3,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/lib/theme";
 
 export const metadata: Metadata = {
-  title: "ContentSplit — Repurpose Content for Every Platform",
-  description: "Turn blog posts and articles into Twitter threads, LinkedIn posts, and short video scripts. AI-powered content repurposing in seconds.",
+  title: "Recast — Repurpose Any Content for Every Platform",
+  description: "Turn articles into Twitter threads, LinkedIn posts, and video scripts in seconds. AI-powered content repurposing.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
