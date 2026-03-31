@@ -2,7 +2,9 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const PLANS = [
   {
@@ -51,12 +53,20 @@ const PLANS = [
   },
 ];
 
-export default function PricingPage() {
+function PricingContent() {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      setSuccess(true);
+    }
+  }, [searchParams]);
 
   const handleCheckout = async (plan: string) => {
     if (plan === "Team") {
-      window.location.href = "mailto:hello@recast-ai.com?subject=Team Plan Inquiry";
+      window.location.href = "mailto:hello@recast-ai.com?subject=Recast Team Plan Inquiry";
       return;
     }
     setLoading(plan);
@@ -69,6 +79,8 @@ export default function PricingPage() {
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else if (data.waitlist) {
+        alert("Pro plan is launching soon! Join the waitlist on the homepage to be notified.");
       } else {
         alert(data.error || "Checkout unavailable. Please try again later.");
       }
@@ -85,6 +97,23 @@ export default function PricingPage() {
       <main style={{ paddingTop: 56 }}>
         <section style={{ padding: "clamp(60px, 8vw, 100px) 0" }}>
           <div className="container" style={{ maxWidth: 960 }}>
+            {/* Success banner */}
+            {success && (
+              <div className="fade-in" style={{
+                padding: "16px 24px", borderRadius: 12, marginBottom: 32,
+                background: "color-mix(in srgb, var(--success) 10%, transparent)",
+                border: "1px solid color-mix(in srgb, var(--success) 20%, transparent)",
+                textAlign: "center",
+              }}>
+                <p style={{ fontSize: 16, fontWeight: 600, color: "var(--success)", marginBottom: 4 }}>
+                  Payment successful!
+                </p>
+                <p style={{ fontSize: 14, color: "var(--text-3)" }}>
+                  Welcome to Recast Pro. You now have unlimited generations.
+                </p>
+              </div>
+            )}
+
             <div style={{ textAlign: "center", marginBottom: 48 }}>
               <span className="label">Pricing</span>
               <h1 className="heading-xl" style={{ marginTop: 8, marginBottom: 12 }}>Simple, transparent pricing</h1>
@@ -134,19 +163,33 @@ export default function PricingPage() {
                     className={p.highlight ? "btn-primary" : "btn-secondary"}
                     style={{ width: "100%", padding: "12px 24px" }}
                   >
-                    {loading === p.name ? "Loading..." : p.cta}
+                    {loading === p.name ? "Redirecting..." : p.cta}
                   </button>
                 </div>
               ))}
             </div>
 
-            <p style={{ textAlign: "center", fontSize: 13, color: "var(--text-4)", marginTop: 24 }}>
-              All plans include a 7-day money-back guarantee. No questions asked.
-            </p>
+            {/* Payment info */}
+            <div style={{ textAlign: "center", marginTop: 32 }}>
+              <p style={{ fontSize: 13, color: "var(--text-4)", marginBottom: 8 }}>
+                All plans include a 7-day money-back guarantee. No questions asked.
+              </p>
+              <p style={{ fontSize: 12, color: "var(--text-4)" }}>
+                Payments powered by <a href="https://lemonsqueezy.com" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-text)", textDecoration: "underline" }}>Lemon Squeezy</a> — secure checkout, no credit card stored on our servers.
+              </p>
+            </div>
           </div>
         </section>
       </main>
       <Footer />
     </>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense>
+      <PricingContent />
+    </Suspense>
   );
 }

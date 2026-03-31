@@ -1,60 +1,86 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Stripe checkout session creation
-// To enable real payments:
-// 1. Set STRIPE_SECRET_KEY in .env.local
-// 2. Create price IDs in Stripe Dashboard
-// 3. Update PRICE_IDS below
+// Lemon Squeezy Checkout API
+// Docs: https://docs.lemonsqueezy.com/api/checkouts/create-checkout
+//
+// Setup:
+// 1. Register at https://lemonsqueezy.com
+// 2. Create a Store
+// 3. Create Products: "Recast Pro" ($9/mo) and "Recast Team" ($29/mo)
+// 4. Get your API key, Store ID, and Variant IDs
+// 5. Add them to Vercel environment variables
 
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const LS_API_KEY = process.env.LEMONSQUEEZY_API_KEY;
+const LS_STORE_ID = process.env.LEMONSQUEEZY_STORE_ID;
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://recast-ai.vercel.app";
 
-const PRICE_IDS: Record<string, string> = {
-  Pro: process.env.STRIPE_PRICE_PRO || "",
-  Team: process.env.STRIPE_PRICE_TEAM || "",
+// Variant IDs for each plan (get from Lemon Squeezy dashboard)
+const VARIANT_IDS: Record<string, string> = {
+  Pro: process.env.LEMONSQUEEZY_VARIANT_PRO || "",
+  Team: process.env.LEMONSQUEEZY_VARIANT_TEAM || "",
 };
 
 export async function POST(req: NextRequest) {
   try {
-    const { plan } = await req.json();
+    const { plan, email } = (await req.json()) as { plan: string; email?: string };
 
-    if (!plan || !PRICE_IDS[plan]) {
+    if (!plan || !VARIANT_IDS[plan]) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
-    // If Stripe is not configured, return a helpful message
-    if (!STRIPE_SECRET_KEY || !PRICE_IDS[plan]) {
+    // If Lemon Squeezy is not configured, return helpful message
+    if (!LS_API_KEY || !LS_STORE_ID || !VARIANT_IDS[plan]) {
       return NextResponse.json({
-        error: "Payment not yet configured. Join the waitlist to be notified when Pro is available.",
+        error: "Payment is being set up. Join the waitlist to be notified when Pro launches!",
         waitlist: true,
       }, { status: 503 });
     }
 
-    // Create Stripe Checkout Session
-    const session = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+    // Create Lemon Squeezy Checkout Session
+    const res = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${STRIPE_SECRET_KEY}`,
-        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${LS_API_KEY}`,
+        "Content-Type": "application/vnd.api+json",
+        Accept: "application/vnd.api+json",
       },
-      body: new URLSearchParams({
-        "mode": "subscription",
-        "payment_method_types[0]": "card",
-        "line_items[0][price]": PRICE_IDS[plan],
-        "line_items[0][quantity]": "1",
-        "success_url": `${APP_URL}/pricing?success=true`,
-        "cancel_url": `${APP_URL}/pricing?canceled=true`,
-        "allow_promotion_codes": "true",
+      body: JSON.stringify({
+        data: {
+          type: "checkouts",
+          attributes: {
+            checkout_data: {
+              email: email || undefined,
+              custom: { source: "recast-app" },
+            },
+            product_options: {
+              redirect_url: `${APP_URL}/pricing?success=true`,
+            },
+          },
+          relationships: {
+            store: {
+              data: { type: "stores", id: LS_STORE_ID },
+            },
+            variant: {
+              data: { type: "variants", id: VARIANT_IDS[plan] },
+            },
+          },
+        },
       }),
     });
 
-    const data = await session.json();
+    const data = await res.json();
 
-    if (data.error) {
-      return NextResponse.json({ error: data.error.message }, { status: 400 });
+    if (!res.ok) {
+      const errMsg = data?.errors?.[0]?.detail || "Checkout creation failed";
+      return NextResponse.json({ error: errMsg }, { status: res.status });
     }
 
-    return NextResponse.json({ url: data.url });
+    const checkoutUrl = data?.data?.attributes?.url;
+    if (!checkoutUrl) {
+      return NextResponse.json({ error: "No checkout URL returned" }, { status: 500 });
+    }
+
+    return NextResponse.json({ url: checkoutUrl });
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Checkout failed" },
