@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402/next";
-import { server, generateRoute } from "@/lib/x402";
+// x402 payment — uncomment when ready to charge
+// import { withX402 } from "@x402/next";
+// import { server, generateRoute } from "@/lib/x402";
 
 // Content extraction from URL
 async function extractFromUrl(url: string): Promise<string> {
@@ -112,9 +113,7 @@ function generateNewsletter(content: string): string {
   return nl;
 }
 
-// Handler — only runs AFTER x402 payment is verified
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const handler = async (req: NextRequest): Promise<NextResponse<any>> => {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { mode, input, platforms } = body as {
@@ -151,16 +150,12 @@ const handler = async (req: NextRequest): Promise<NextResponse<any>> => {
       return { platform, content: generated };
     });
 
-    return NextResponse.json({
-      results,
-      payment: { protocol: "x402", network: "Base Sepolia", amount: "$0.01 USDC" },
-      powered_by: "Recast x PayGate402",
-    });
+    return NextResponse.json({ results });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
   }
-};
+}
 
-// Wrap with x402 — returns 402 without payment, executes handler after payment verified
-export const POST = withX402(handler, generateRoute, server);
+// TODO: Enable x402 payment when ready to charge
+// export const POST = withX402(handler, generateRoute, server);
