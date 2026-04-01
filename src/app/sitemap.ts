@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
 
+const SITE_URL = "https://contentsplit.vercel.app";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: "https://recast-ai.vercel.app",
+      url: SITE_URL,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,

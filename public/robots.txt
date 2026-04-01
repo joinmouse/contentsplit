@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /api/
 
-Sitemap: https://recast-ai.vercel.app/sitemap.xml
+Sitemap: https://contentsplit.vercel.app/sitemap.xml
