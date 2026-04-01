@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://recast.frankwu.site";
+const SITE_URL = "https://contentsplit.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

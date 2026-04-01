@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://recast.frankwu.site/sitemap.xml
+Sitemap: https://contentsplit.vercel.app/sitemap.xml
