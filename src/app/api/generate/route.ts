@@ -48,7 +48,7 @@ function generateTwitterThread(content: string): string {
     thread += `${i + 1}/ ${point.slice(0, 240)}\n\n`;
   });
 
-  thread += `${points.length + 1}/ If you found this useful:\n• Retweet the first tweet\n• Follow for more insights\n• Drop a 🔥 in the replies`;
+  thread += `${points.length + 1}/ If you found this useful:\n• Retweet the first tweet\n• Follow for more insights\n• Drop a 🔥 in the replies\n\n💡 Made with contentsplit.vercel.app`;
 
   return thread;
 }
@@ -65,7 +65,7 @@ function generateLinkedInPost(content: string): string {
   });
   post += `---\n\n`;
   post += `The bottom line? ${sentences[sentences.length - 1]?.slice(0, 200) || "This changes everything."}\n\n`;
-  post += `♻️ Repost if this resonated.\n💬 What's your take? Comment below.`;
+  post += `♻️ Repost if this resonated.\n💬 What's your take? Comment below.\n\n💡 Made with contentsplit.vercel.app`;
 
   return post;
 }

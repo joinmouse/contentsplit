@@ -24,6 +24,7 @@ export default function Header() {
           <Link href="#features" style={{ fontSize: 14, color: "var(--text-3)", textDecoration: "none" }}>Features</Link>
           <Link href="#how-it-works" style={{ fontSize: 14, color: "var(--text-3)", textDecoration: "none" }}>How It Works</Link>
           <Link href="#try" style={{ fontSize: 14, color: "var(--text-3)", textDecoration: "none" }}>Try It</Link>
+          <Link href="/launch" style={{ fontSize: 14, color: "var(--accent-text)", textDecoration: "none", fontWeight: 600 }}>Launch Kit</Link>
 
           <button onClick={toggle} style={{
             background: "none", border: "1px solid var(--border)", borderRadius: 8,

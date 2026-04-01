@@ -342,6 +342,12 @@ export default function HomePage() {
                 </div>
                 {results.map((r, i) => {
                   const plat = PLATFORMS.find((p) => p.id === r.platform);
+                  const shareText = r.platform === "twitter"
+                    ? encodeURIComponent(r.content.slice(0, 250) + "\n\n— Made with https://contentsplit.vercel.app")
+                    : encodeURIComponent("Just used Recast to turn an article into a " + (plat?.label || r.platform) + " in 10 seconds.\n\nTry it free: https://contentsplit.vercel.app");
+                  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${shareText}`;
+                  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://contentsplit.vercel.app")}`;
+
                   return (
                     <div key={i} className="card" style={{ padding: 0, overflow: "hidden" }}>
                       <div style={{
@@ -354,7 +360,7 @@ export default function HomePage() {
                             {plat?.label || r.platform}
                           </span>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <span style={{ fontSize: 11, color: "var(--text-4)" }}>{r.content.length} chars</span>
                           <button onClick={() => copyToClipboard(r.content, r.platform)} style={{
                             padding: "6px 14px", borderRadius: 6, border: "1px solid var(--border)",
@@ -364,6 +370,20 @@ export default function HomePage() {
                           }}>
                             {copied === r.platform ? "Copied!" : "Copy"}
                           </button>
+                          <a href={twitterShareUrl} target="_blank" rel="noopener noreferrer" style={{
+                            padding: "6px 10px", borderRadius: 6, border: "1px solid var(--border)",
+                            fontSize: 12, fontWeight: 500, color: "var(--text-3)", textDecoration: "none",
+                            display: "inline-flex", alignItems: "center", gap: 4, transition: "all 0.15s",
+                          }}>
+                            𝕏 Share
+                          </a>
+                          <a href={linkedinShareUrl} target="_blank" rel="noopener noreferrer" style={{
+                            padding: "6px 10px", borderRadius: 6, border: "1px solid var(--border)",
+                            fontSize: 12, fontWeight: 500, color: "var(--text-3)", textDecoration: "none",
+                            display: "inline-flex", alignItems: "center", gap: 4, transition: "all 0.15s",
+                          }}>
+                            in Share
+                          </a>
                         </div>
                       </div>
                       <div className="output-block" style={{ border: "none", borderRadius: 0 }}>
