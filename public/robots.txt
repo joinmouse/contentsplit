@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://contentsplit.vercel.app/sitemap.xml
+Sitemap: https://recast.vercel.app/sitemap.xml

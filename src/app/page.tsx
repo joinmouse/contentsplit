@@ -343,10 +343,10 @@ export default function HomePage() {
                 {results.map((r, i) => {
                   const plat = PLATFORMS.find((p) => p.id === r.platform);
                   const shareText = r.platform === "twitter"
-                    ? encodeURIComponent(r.content.slice(0, 250) + "\n\n— Made with https://contentsplit.vercel.app")
-                    : encodeURIComponent("Just used Recast to turn an article into a " + (plat?.label || r.platform) + " in 10 seconds.\n\nTry it free: https://contentsplit.vercel.app");
+                    ? encodeURIComponent(r.content.slice(0, 250) + "\n\n— Made with https://recast.vercel.app")
+                    : encodeURIComponent("Just used Recast to turn an article into a " + (plat?.label || r.platform) + " in 10 seconds.\n\nTry it free: https://recast.vercel.app");
                   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${shareText}`;
-                  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://contentsplit.vercel.app")}`;
+                  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent("https://recast.vercel.app")}`;
 
                   return (
                     <div key={i} className="card" style={{ padding: 0, overflow: "hidden" }}>
