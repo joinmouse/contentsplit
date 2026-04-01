@@ -10,16 +10,23 @@ export const metadata: Metadata = {
     default: "Recast — Repurpose Any Content for Every Platform",
     template: "%s | Recast",
   },
-  description: "Turn blog posts and articles into Twitter threads, LinkedIn posts, video scripts, and newsletters in seconds. Free AI-powered content repurposing tool.",
+  description: "Turn blog posts and articles into Twitter threads, LinkedIn posts, video scripts, and newsletters in seconds. Free AI-powered content repurposing tool. No sign-up needed.",
   keywords: [
     "content repurposing", "repurpose content", "blog to twitter thread",
     "blog to linkedin post", "content marketing tool", "AI content generator",
     "twitter thread generator", "linkedin post generator", "video script generator",
     "newsletter generator", "content creator tools", "social media content",
     "repurpose blog posts", "content distribution", "multi-platform content",
+    "content repurposing tool free", "turn article into tweet", "article to social media",
+    "recast content", "content automation", "social media repurposing",
   ],
   authors: [{ name: "Recast" }],
   creator: "Recast",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -56,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <script dangerouslySetInnerHTML={{ __html: `
           try {
             const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
@@ -74,7 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             ` }} />
           </>
         )}
-        {/* Structured Data */}
+        {/* Structured Data — WebApplication */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebApplication",
@@ -92,6 +100,45 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             "@type": "Organization",
             name: "Recast",
           },
+        }) }} />
+        {/* Structured Data — FAQPage for rich snippets */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "What is Recast?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Recast is a free AI-powered tool that turns blog posts and articles into Twitter threads, LinkedIn posts, video scripts, and newsletters in seconds.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Is Recast free to use?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes, Recast is completely free. No sign-up or credit card needed. Just paste your content and generate.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What platforms does Recast support?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Recast generates content for 4 platforms: Twitter threads (with hooks and CTAs), LinkedIn posts (professional narrative), 60-second video scripts (for Reels/TikTok/Shorts), and newsletter digests.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Can I use a URL to generate content?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes, you can paste any blog post or article URL and Recast will automatically extract the content and generate platform-optimized versions.",
+              },
+            },
+          ],
         }) }} />
       </head>
       <body>
